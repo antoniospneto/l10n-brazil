@@ -19,3 +19,7 @@ class OperationLine(models.Model):
         string="Account",
         company_dependent=True,
     )
+
+    is_st = fields.Boolean(
+        string="Is ST?"
+    )

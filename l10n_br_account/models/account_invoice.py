@@ -630,10 +630,15 @@ class AccountInvoice(models.Model):
                 if line.fiscal_operation_id.tax_calc != TAX_CALC_AUTO:
                     doc_line = self.line_ids.filtered(
                         lambda l: l.product_id.id == line.product_id.id)
-                    for field in line._fields.keys():
-                        if field.endswith('_value') or \
-                                field.endswith('_base') or \
-                                field.endswith('_tax_id'):
+                    if doc_line.icmsst_value > 0.0:
+                        line.with_context(
+                            is_st=True)._onchange_fiscal_operation_id()
+                    for field in self.env['l10n_br_fiscal.document.line.mixin'
+                            ]._fields.keys():
+                        if field not in (
+                                'id', '__last_update', 'display_name',
+                                'comment_ids', 'fiscal_operation_id',
+                                'fiscal_operation_line_id', 'cfop_id'):
                             line[field] = doc_line[field]
 
             refund_invoice_id = my_new_invoices.refund_invoice_id

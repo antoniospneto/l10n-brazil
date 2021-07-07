@@ -15,6 +15,9 @@
                     name="account_id"
                     attrs="{'readonly': [('state', '!=', 'draft')]}"
                 />
+                <field
+                    name="is_st"
+                />
             </field>
         </field>
     </record>
