@@ -615,6 +615,15 @@ class Document(models.Model):
                 if fsc_op_line.tax_calc == TAX_CALC_AUTO:
                     line._onchange_fiscal_operation_id()
                     line._onchange_fiscal_operation_line_id()
+                else:
+                    doc_line = record.line_ids.filtered(
+                        lambda l: l.product_id.id == line.product_id.id)
+                    for field in line._fields.keys():
+                        if field.endswith('_value') or \
+                                field.endswith('_base') or \
+                                field.endswith('_tax_id'):
+                            line[field] = doc_line[field]
+
 
             return_docs |= new_doc
         return return_docs
