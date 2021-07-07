@@ -16,6 +16,7 @@ from ..constants.fiscal import (
     SITUACAO_EDOC_AUTORIZADA,
     SITUACAO_EDOC_CANCELADA,
     SITUACAO_EDOC_DENEGADA,
+    TAX_CALC_AUTO,
 )
 
 
@@ -598,7 +599,8 @@ class Document(models.Model):
 
             new_doc = record.copy()
             new_doc.fiscal_operation_id = fsc_op
-            new_doc._onchange_fiscal_operation_id()
+            if fsc_op.tax_calc == TAX_CALC_AUTO:
+                new_doc._onchange_fiscal_operation_id()
 
             for line in new_doc.line_ids:
                 fsc_op_line = line.fiscal_operation_id.return_fiscal_operation_id
@@ -610,8 +612,9 @@ class Document(models.Model):
                         )
                     )
                 line.fiscal_operation_id = fsc_op_line
-                line._onchange_fiscal_operation_id()
-                line._onchange_fiscal_operation_line_id()
+                if fsc_op_line.tax_calc == TAX_CALC_AUTO:
+                    line._onchange_fiscal_operation_id()
+                    line._onchange_fiscal_operation_line_id()
 
             return_docs |= new_doc
         return return_docs
