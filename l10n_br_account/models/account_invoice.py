@@ -15,6 +15,7 @@ from odoo.addons.l10n_br_fiscal.constants.fiscal import (
     FISCAL_OUT,
     SITUACAO_EDOC_CANCELADA,
     SITUACAO_EDOC_EM_DIGITACAO,
+    TAX_CALC_AUTO,
 )
 
 INVOICE_TO_OPERATION = {
@@ -626,6 +627,14 @@ class AccountInvoice(models.Model):
                     or line.fiscal_operation_id.return_fiscal_operation_id
                 )
                 line._onchange_fiscal_operation_id()
+                if line.fiscal_operation_id.tax_calc != TAX_CALC_AUTO:
+                    doc_line = self.line_ids.filtered(
+                        lambda l: l.product_id.id == line.product_id.id)
+                    for field in line._fields.keys():
+                        if field.endswith('_value') or \
+                                field.endswith('_base') or \
+                                field.endswith('_tax_id'):
+                            line[field] = doc_line[field]
 
             refund_invoice_id = my_new_invoices.refund_invoice_id
 
