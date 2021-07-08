@@ -262,18 +262,18 @@ class NFe(spec_models.StackedModel):
             if record.fiscal_additional_data:
                 record.nfe40_infAdFisco = (
                     normalize("NFKD", record.fiscal_additional_data)
-                    .encode("ASCII", "ignore")
-                    .decode("ASCII")
-                    .replace("\n", "")
-                    .replace("\r", "")
+                        .encode("ASCII", "ignore")
+                        .decode("ASCII")
+                        .replace("\n", "")
+                        .replace("\r", "")
                 )
             if record.customer_additional_data:
                 record.nfe40_infCpl = (
                     normalize("NFKD", record.customer_additional_data)
-                    .encode("ASCII", "ignore")
-                    .decode("ASCII")
-                    .replace("\n", "")
-                    .replace("\r", "")
+                        .encode("ASCII", "ignore")
+                        .decode("ASCII")
+                        .replace("\n", "")
+                        .replace("\r", "")
                 )
 
     @api.multi
@@ -357,9 +357,15 @@ class NFe(spec_models.StackedModel):
             record._export_fields_pagamentos()
             edoc = record.serialize()[0]
             processador = record._processador()
-            xml_file = processador._generateds_to_string_etree(
-                edoc, pretty_print=pretty_print
-            )[0]
+            xml_file, xml_tree = processador._generateds_to_string_etree(
+                edoc, pretty_print=pretty_print)
+
+            # Remove vTroco
+            # TODO pouco importa o que é feito aqui esse xml será ignorado.
+            for element in xml_tree.findall(".//{http://www.portalfiscal.inf.br/nfe}vTroco"):
+                element.getparent().remove(element)
+            xml_file = etree.tostring(xml_tree).decode()
+
             _logger.debug(xml_file)
             event_id = self.event_ids.create_event_save_xml(
                 company_id=self.company_id,
@@ -553,8 +559,8 @@ class NFe(spec_models.StackedModel):
         if key == "nfe40_mod":
             vals["document_type_id"] = (
                 self.env["l10n_br_fiscal.document.type"]
-                .search([("code", "=", value)], limit=1)
-                .id
+                    .search([("code", "=", value)], limit=1)
+                    .id
             )
 
         return super(NFe, self)._build_attr(node, fields, vals, path, attr)
