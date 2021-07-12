@@ -8,6 +8,10 @@ class ContractContract(models.Model):
     _name = "contract.contract"
     _inherit = [_name, "l10n_br_fiscal.document.mixin"]
 
+    currency_id = fields.Many2one(
+        readonly=False,
+    )
+
     @api.model
     def _fiscal_operation_domain(self):
         domain = [("state", "=", "approved")]
@@ -87,6 +91,9 @@ class ContractContract(models.Model):
                 line._onchange_product_id_fiscal()
                 line.price_unit = line.contract_line_id.price_unit
                 line._onchange_fiscal_operation_id()
+                line._onchange_fiscal_tax_ids()
+
+            invoice._onchange_invoice_line_ids()
 
     @api.multi
     def _prepare_recurring_invoices_values(self, date_ref=False):
