@@ -274,10 +274,29 @@ class FiscalDocumentLineMixinMethods(models.AbstractModel):
 
     def _document_comment(self):
         for d in self.filtered("comment_ids"):
-            d.additional_data = d.additional_data or ""
-            d.additional_data += d.comment_ids.compute_message(
-                d.__document_comment_vals()
-            )
+            for comment_id in d.comment_ids:
+                comment_find_flag = False
+                additional_data = comment_id.compute_message(d.__document_comment_vals())
+                for segment in d.additional_data_segment_ids:
+                    if comment_id == segment.source_comment_id:
+                        comment_find_flag = True
+                        segment.additional_data = additional_data
+                if not comment_find_flag:
+                    segment_id = self.env['additional.data.segment'].create({
+                        'source_comment_id': comment_id.id,
+                        'is_computed_data': True,
+                        'additional_data': additional_data,
+                    })
+                    d.additional_data_segment_ids = [(4, segment_id.id)]
+
+            d.additional_data = ''
+            for segment in d.additional_data_segment_ids:
+                if d.additional_data != '':
+                    d.additional_data += ' '
+                d.additional_data += segment.additional_data
+
+
+
 
     @api.onchange("fiscal_operation_id")
     def _onchange_fiscal_operation_id(self):

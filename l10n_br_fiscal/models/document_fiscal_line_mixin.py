@@ -840,6 +840,14 @@ class FiscalDocumentLineMixin(models.AbstractModel):
         domain=[("object", "=", FISCAL_COMMENT_LINE)],
     )
 
+    additional_data_segment_ids = fields.Many2many(
+        comodel_name="additional.data.segment",
+        relation="l10n_br_fiscal_document_line_mixin_add_data_seg_rel",
+        column1="document_line_mixin_id",
+        column2="additional_data_segment_id",
+        string="Additional Data Segment",
+    )
+
     additional_data = fields.Char(string="Additional Data")
 
     amount_estimate_tax = fields.Monetary(

@@ -911,7 +911,11 @@
             </group>
             <group>
                 <field name="comment_ids" widget="many2many_tags" />
-                <field name="additional_data" />
+                <field name="additional_data_segment_ids"
+                       String="Additional Data"
+                       domain="[]"
+                       widget="many2many_tags"
+                       options="{'color_field': 'color'}" />
             </group>
           </page>
         </notebook>
