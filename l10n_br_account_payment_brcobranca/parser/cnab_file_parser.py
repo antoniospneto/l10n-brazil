@@ -521,8 +521,13 @@ class CNABFileParser(FileParser):
         # necessário atualizar o Valor Recebido pois o Odoo não
         # aceita a conciliação nem com um Valor Menor ou Maior.
         valor_recebido_calculado = (
-            valor_recebido + valor_desconto + valor_abatimento
+            valor_recebido + valor_desconto + valor_abatimento + valor_tarifa
         ) - valor_juros_mora
+
+        # No itaú(341) o valor recebido (valor principal) já vem com a tarifa descontada
+        # precisamos atualizar o valor recebido para que a reconcialiação feche.
+        if self.bank.code_bc == "341":
+            valor_recebido_calculado += valor_tarifa
 
         row_list.append(
             {
