@@ -163,3 +163,9 @@ class AccountPaymentOrder(models.Model):
             return (False, False)
         else:
             return super().generate_payment_file()
+
+    def action_cancel(self):
+        super().action_cancel()
+        for order in self:
+            for payment_line in order.payment_line_ids:
+                payment_line.back_old_state()
