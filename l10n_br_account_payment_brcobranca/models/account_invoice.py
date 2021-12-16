@@ -103,3 +103,9 @@ class AccountInvoice(models.Model):
         if not self.file_boleto_pdf_id:
             self.gera_boleto_pdf()
         return self._target_new_tab(self.file_pdf_id)
+
+    def view_recreate_boleto_pdf(self):
+        # Isso irá forçar a regeração do boleto, apagando todas as informações anteriores.
+        self._pos_action_move_create()
+        self.gera_boleto_pdf()
+        return self._target_new_tab(self.file_pdf_id)

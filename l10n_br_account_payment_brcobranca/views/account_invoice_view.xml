@@ -17,6 +17,13 @@
                     class="btn-primary"
                     attrs="{'invisible': ['|', ('state', '!=', 'open'), ('payment_method_code', 'not in', ('240', '400', '500'))]}"
                 />
+                <button
+                    name="view_recreate_boleto_pdf"
+                    type="object"
+                    string="Imprimir Boleto (regerar)"
+                    class="btn-primary"
+                    attrs="{'invisible': ['|', ('state', '!=', 'open'), ('payment_method_code', 'not in', ('240', '400', '500'))]}"
+                />
             </button>
         </field>
     </record>
