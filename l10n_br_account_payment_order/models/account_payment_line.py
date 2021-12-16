@@ -173,3 +173,20 @@ class AccountPaymentLine(models.Model):
             res.update({"favored_warning": mode.favored_warning})
 
         return res
+
+    def back_old_state(self):
+        for line in self:
+            if (
+                line.mov_instruction_code_id
+                == line.payment_mode_id.cnab_sending_code_id
+            ):
+                line.move_line_id.cnab_state = "draft"
+            if (
+                line.mov_instruction_code_id
+                == line.payment_mode_id.cnab_write_off_code_id
+            ):
+                line.move_line_id.cnab_state = "accepted"
+
+    def unlink(self):
+        self.back_old_state()
+        return super().unlink()
